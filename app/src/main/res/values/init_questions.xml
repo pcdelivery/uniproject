@@ -1,0 +1,13 @@
+<resources>
+    <string name="init_place">Доходный дом Розенштейна</string>
+    <string name="init_question_1">Дата основания здания</string>
+    <string name="init_answer_1">1834</string>
+    <string name="init_answer_2">1913</string>
+    <string name="init_answer_3">1896</string>
+    <string name="init_answer_4">1905</string>
+    <string name="init_question_2">Альтернативное название здания</string>
+    <string name="init_answer_5">Дом Белогруда</string>
+    <string name="init_answer_6">Театр им. Ленина</string>
+    <string name="init_answer_7">Петроградка</string>
+    <string name="init_answer_8">Дом с башнями</string>
+</resources>

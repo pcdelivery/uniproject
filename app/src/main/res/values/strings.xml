@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Аркантаун</string>
+    <string name="login_req">Логин:</string>
+    <string name="pass_req">Пароль:</string>
+    <string name="title_activity_login">Sign in</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+
+    <string name="login_ver">Вход в аккаунт</string>
+    <string name="welcome">"Добро пожаловать,"</string>
+    <string name="title_activity_main_page">Главное меню</string>
+    <string name="welcome_login_default">[LOGIN]</string>
+    <string name="welcome_password_default">[PASSWORD]</string>
+    <string name="you_have_x_points">У тебя %1$d баллов</string>
+    <string name="add_data_about_yourself">Добавить данные о себе</string>
+    <string name="add_data_about_yourself_hint">+5 баллов</string>
+    <string name="do_test_button">Пройти тест</string>
+    <string name="button_next">Далее ></string>
+</resources>
