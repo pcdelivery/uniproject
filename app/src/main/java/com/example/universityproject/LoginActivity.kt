@@ -10,9 +10,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.Scopes
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.Scope
 import com.google.android.gms.tasks.Task
 import kotlinx.android.synthetic.main.activity_login_page.*
@@ -22,7 +24,7 @@ const val GOOGLE_SIGN_IN_REQUEST = 2020
 const val ACCOUNT_LOGIN_NAME = "[USER_LOGIN]"
 const val ACCOUNT_PASSWORD = "[USER_PASSWORD]"
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,6 +87,10 @@ class LoginActivity : AppCompatActivity() {
 //        intent.putExtra("email", account?.email)
 //        intent.putExtra("name", account?.displayName)
 //        intent.putExtra("avi", account?.photoUrl)
+    }
+
+    override fun onConnectionFailed(p0: ConnectionResult) {
+        TODO("Not yet implemented")
     }
 }
 

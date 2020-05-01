@@ -39,9 +39,14 @@ class MainPageActivity : AppCompatActivity() {
             startActivityForResult(intent, SPECIALITY_REQUEST)
         }
         findViewById<Button>(R.id.doTest).setOnClickListener {
-            Toast.makeText(this, "AAAAAA", Toast.LENGTH_SHORT).show()
             val intent = Intent(this, TryActivity::class.java)
             startActivityForResult(intent, TEST_REQUEST)
+        }
+        findViewById<Button>(R.id.accountInfoButton).setOnClickListener {
+            val intent = Intent(this, AccountInfoActivity::class.java)
+            intent.putExtra(ACCOUNT_DETAILS_KEY, this.intent.getStringExtra(ACCOUNT_DETAILS_KEY))
+
+            startActivity(intent)
         }
 
         // initial set

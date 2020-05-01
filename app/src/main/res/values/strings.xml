@@ -21,4 +21,8 @@
     <string name="add_data_about_yourself_hint">+5 баллов</string>
     <string name="do_test_button">Пройти тест</string>
     <string name="button_next">Далее ></string>
+
+    <string name="title_activity_user_album">UserAlbumActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>
