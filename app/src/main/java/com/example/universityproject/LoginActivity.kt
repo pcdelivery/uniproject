@@ -3,29 +3,30 @@ package com.example.universityproject
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
 import android.widget.Button
-import android.widget.TextView
+import android.widget.EditText
 import android.widget.Toast
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import androidx.fragment.app.Fragment
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.login.LoginResult
+import com.facebook.login.widget.LoginButton
+import com.google.android.gms.auth.api.Auth
+import com.google.android.gms.auth.api.signin.*
 import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.Scopes
 import com.google.android.gms.common.SignInButton
-import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.common.api.Scope
-import com.google.android.gms.tasks.Task
 import kotlinx.android.synthetic.main.activity_login_page.*
 
 
-const val GOOGLE_SIGN_IN_REQUEST = 2020
+const val GOOGLE_SIGN_IN = 2020
 const val ACCOUNT_LOGIN_NAME = "[USER_LOGIN]"
 const val ACCOUNT_PASSWORD = "[USER_PASSWORD]"
 
 class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener {
-
+    lateinit var callbackManager : CallbackManager;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,54 +35,103 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
 
         findViewById<Button>(R.id.default_sign_in_button).setOnClickListener { login() }
         findViewById<SignInButton>(R.id.google_sign_in_button).setOnClickListener { enterGoogle() }
+        findViewById<Button>(R.id.reg_button).setOnClickListener {
+            intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
+        }
+
+        // try Google Maps
+        findViewById<Button>(R.id.button2).setOnClickListener {
+            startActivity(Intent(this, MapActivity::class.java))
+        }
+        // /try
+
+
+        // facebook n' sheet
+        val loginButton = findViewById<LoginButton>(R.id.facebook_login_button)
+        loginButton.setPermissions("email")
+
+        val callbackManager = CallbackManager.Factory.create();
+
+        class sa<T> : FacebookCallback<LoginResult> {
+            override fun onSuccess(result: LoginResult?) {
+                findViewById<EditText>(R.id.loginEditText).text = Editable.Factory().newEditable(result!!.accessToken.userId.toString())
+                findViewById<EditText>(R.id.passwordEditText).text = Editable.Factory().newEditable(result!!.accessToken.userId.toString())
+            }
+
+            override fun onCancel() {
+                Toast.makeText(applicationContext, "[F]Warning: Connection Canceled", Toast.LENGTH_LONG).show()
+            }
+
+            override fun onError(error: FacebookException?) {
+                Toast.makeText(applicationContext, "[F]Error: Connection Failed", Toast.LENGTH_LONG).show()
+            }
+
+        }
+        loginButton.registerCallback(callbackManager, sa<LoginResult>())
     }
 
     private fun login() {
-        val intent = Intent(this, LoginVerificationActivity::class.java)
-
-        intent.putExtra(ACCOUNT_LOGIN_NAME, loginEditText.text.toString())
-        intent.putExtra(ACCOUNT_PASSWORD, passwordEditText.text.toString())
-        startActivity(intent)
+        verification(loginEditText.text.toString(), passwordEditText.text.toString())
     }
 
     private fun enterGoogle() {
-        var account : GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(this)
-        if (account == null) {
-            // Request more
-            // https://developers.google.com/identity/sign-in/android/additional-scopes
-            Toast.makeText(this, "La1", Toast.LENGTH_SHORT).show()
-            val gsOptions : GoogleSignInOptions = GoogleSignInOptions
-                .Builder()
-                .requestIdToken("365090157083-ooslts2c10sn60rpkr587u0s12h2bjtg.apps.googleusercontent.com")
-                .requestScopes(Scope(Scopes.PROFILE))
-                .requestScopes(Scope(Scopes.EMAIL))
-                .requestProfile()
-                .requestEmail().build()
-            val gsClient = GoogleSignIn.getClient(this, gsOptions)
-            startActivityForResult(gsClient.signInIntent, GOOGLE_SIGN_IN_REQUEST)
+        val ga = GoogleSignIn.getLastSignedInAccount(this)
+
+//        if (ga == null) {
+        if (true) {
+//            Toast.makeText(this, "New access", Toast.LENGTH_LONG).show()
+            val gso =
+                GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail()
+                    .requestProfile().build()
+            val gc = GoogleApiClient.Builder(this).enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso).build()
+
+            intent = Auth.GoogleSignInApi.getSignInIntent(gc)
+            startActivityForResult(intent, GOOGLE_SIGN_IN)
+//            finish()
         }
         else
-            updateUI(account)
+            verification(ga!!.email.toString())
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Toast.makeText(this, "qonActivityResult", Toast.LENGTH_SHORT).show()
 
-//        if (requestCode == GOOGLE_SIGN_IN_REQUEST) {
-//        val name = GoogleSignIn.getSignedInAccountFromIntent(data).result?.displayName
-        val name = GoogleSignIn.getSignedInAccountFromIntent(data).exception.toString()
-        findViewById<TextView>(R.id.textView).text = name
-//        val task : Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
-//        if (task.isSuccessful) updateUI()
+        if (requestCode == GOOGLE_SIGN_IN) {
+            val signInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
+
+
+            if (signInResult!!.isSuccess) {
+                Toast.makeText(this, "Google Sign-In was successful", Toast.LENGTH_LONG).show()
+                val account = signInResult.signInAccount
+
+
+                /*
+                // try
+                val message = StringBuffer(account?.givenName.toString())
+                message.append(account?.displayName)
+                message.append(account?.familyName)
+                message.append(account?.email)
+                Toast.makeText(this, message.toString(), Toast.LENGTH_LONG).show()
+                // /try
+                */
+
+                verification(account!!.email.toString())
+            }
+            else
+                Toast.makeText(this, "Google Sign-In isn't successful", Toast.LENGTH_LONG).show()
+        }
+        else {
+            callbackManager.onActivityResult(requestCode, resultCode, data)
+        }
     }
 
-    // @todo login + updateUI
-    private fun updateUI(account : GoogleSignInAccount?) {
+    private fun verification (login : String, pass : String = "_google_pass") {
         val intent = Intent(this, LoginVerificationActivity::class.java)
 
-        intent.putExtra(ACCOUNT_LOGIN_NAME, account?.displayName)
-        intent.putExtra(ACCOUNT_PASSWORD, "_google_pass")
+        intent.putExtra(ACCOUNT_LOGIN_NAME, login)
+        intent.putExtra(ACCOUNT_PASSWORD, pass)
         startActivity(intent)
 
 //        intent.putExtra("email", account?.email)
@@ -90,7 +140,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
     }
 
     override fun onConnectionFailed(p0: ConnectionResult) {
-        TODO("Not yet implemented")
+        Toast.makeText(this, "Error: Connection Failed", Toast.LENGTH_LONG).show()
     }
 }
 

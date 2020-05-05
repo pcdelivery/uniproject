@@ -7,15 +7,19 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Handler
 import android.widget.TextView
 import android.database.sqlite.*
+import android.util.Log
+import com.example.universityproject.data.databases.AccountDatabase
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import java.lang.Exception
 import java.sql.*
 
 const val ACCOUNT_DETAILS_KEY = "[ACCOUNT_DETAILS_KEY]"
 
 class LoginVerificationActivity : AppCompatActivity() {
 
-    var login : String? = null
-    var password : String? = null
-    var database = SQLiteDatabaseHelper(this, "MYDATA.dll", null, 1)
+    var login : String = "???"
+    var password : String = "???"
+    var database : AccountDatabase? = null
     var verifiedAccount : ArcantownAccount? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,10 +27,15 @@ class LoginVerificationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login_verification)
 
         // @todo to loginActivity
-        database.Build();
+        database = AccountDatabase(this, 1)
 
-        login = intent.getStringExtra(ACCOUNT_LOGIN_NAME)
-        password = intent.getStringExtra(ACCOUNT_PASSWORD)
+        try {
+            login = intent.getStringExtra(ACCOUNT_LOGIN_NAME)
+            password = intent.getStringExtra(ACCOUNT_PASSWORD)
+        }
+        catch (x : Exception) {
+            Log.println(Log.ERROR, null, x.message)
+        }
 //        login = "Admin"
 //        password = "qwerty123"
 
@@ -39,27 +48,49 @@ class LoginVerificationActivity : AppCompatActivity() {
         val handler = Handler()
         handler.postDelayed(Runnable {
             if (password == "_google_pass")
-                success()
+                registerIfNotRegistered(login, password)
 
-            val db = database.readableDatabase
-            val COMMAND_SELECT = "SELECT * FROM accounts WHERE" +
-                    " login='${login}' AND" +
-                    " password='${password}'"
-
-            val cursor = db.rawQuery(COMMAND_SELECT, null)
-
-            if (cursor.moveToFirst()) {
-                val account : ArcantownAccount = ArcantownAccount(cursor.getString(1), cursor.getString(2))
-                    .Build(cursor.getString(3), cursor.getString(4))
-                account.id = cursor.getInt(0)
-                verifiedAccount = account
-
-                cursor.close()
+            if (isRegistered(login, password)) {
                 success()
             }
+
+//                val account : ArcantownAccount = ArcantownAccount(cursor.getString(1), cursor.getString(2))
+//                    .Build(cursor.getString(3), cursor.getString(4))
+//                account.id = cursor.getInt(0)
+//                verifiedAccount = account
+
             else
                 unsuccess()
         }, 1000)
+    }
+
+    private fun isRegistered (loginToVerify : String, passwordToVerify : String = "_google_pass"): Boolean {
+        val db = database!!.readableDatabase
+        val COMMAND_SELECT = "SELECT * FROM accounts WHERE" +
+                " login='${loginToVerify}' AND" +
+                " password='${passwordToVerify}'"
+
+        val cursor = db.rawQuery(COMMAND_SELECT, null)
+//        cursor.close()
+
+        return cursor.moveToFirst()
+    }
+
+    private fun registerIfNotRegistered (loginToVerify : String, passwordToVerify : String = "_google_pass") {
+        if (isRegistered(loginToVerify, passwordToVerify))
+            return
+
+        if (passwordToVerify == "_google_pass") {
+            val db = database!!.writableDatabase
+            val ga = GoogleSignIn.getLastSignedInAccount(this)
+
+            AccountDatabase.putNewRow(db,
+                ArcantownAccount(
+                    loginToVerify,
+                    passwordToVerify,
+                    ga!!.displayName,
+                    ga!!.familyName))
+        }
     }
 
     private fun success() {
@@ -77,6 +108,7 @@ class LoginVerificationActivity : AppCompatActivity() {
         loginIntent.putExtra(ACCOUNT_DETAILS_KEY, "verifiedAccount?._getFullAccountInfo()")
         val temp = verifiedAccount?.accountInfo
 
+        database?.close()
 
         Toast.makeText(this, "[SUCCESS] $login : $password ($temp)", Toast.LENGTH_SHORT).show()
         startActivity(loginIntent)
@@ -85,6 +117,7 @@ class LoginVerificationActivity : AppCompatActivity() {
     private fun unsuccess() {
         val loginIntent = Intent(this, LoginActivity::class.java)
         Toast.makeText(this, "[Аккаунта с такими данными не существует] " + login + " : " + password, Toast.LENGTH_SHORT).show()
+        database?.close()
         startActivity(loginIntent)
     }
 }

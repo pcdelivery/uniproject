@@ -25,4 +25,9 @@
     <string name="title_activity_user_album">UserAlbumActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="facebook_app_id">712210002852464</string>
+    <string name="fb_login_protocol_scheme">fb712210002852464</string>
+    <string name="title_activity_map">Map</string>
+
 </resources>

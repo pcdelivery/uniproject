@@ -3,10 +3,10 @@ package com.example.universityproject.data.databases;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.universityproject.SQLiteDatabaseHelper;
 
-public class GalleryDatabase extends SQLiteDatabaseHelper {
+public class GalleryDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "Images.db";
     private static final String TABLE_NAME = "user_album";
     private static final String CLEAR_COMMAND = "DELETE FROM " + TABLE_NAME;
@@ -40,7 +40,6 @@ public class GalleryDatabase extends SQLiteDatabaseHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        super.onUpgrade(db, oldVersion, newVersion);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }
