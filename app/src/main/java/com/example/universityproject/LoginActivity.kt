@@ -13,6 +13,7 @@ import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginResult
 import com.facebook.login.widget.LoginButton
+//import com.firebase.ui.auth.AuthUI
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.*
 import com.google.android.gms.common.ConnectionResult
@@ -26,11 +27,24 @@ const val ACCOUNT_LOGIN_NAME = "[USER_LOGIN]"
 const val ACCOUNT_PASSWORD = "[USER_PASSWORD]"
 
 class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener {
-    lateinit var callbackManager : CallbackManager;
+
+    lateinit var callbackManager : CallbackManager
+    // FIREBASE
+//    lateinit var providers : List<AuthUI.IdpConfig>
+    // /FIREBASE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_page)
+
+        // FIREBASE
+//        providers = listOf(
+//            AuthUI.IdpConfig.EmailBuilder().build(),
+//            AuthUI.IdpConfig.PhoneBuilder().build(),
+//            AuthUI.IdpConfig.FacebookBuilder().build(),
+//            AuthUI.IdpConfig.GoogleBuilder().build()
+//        )
+        //
 
 
         findViewById<Button>(R.id.default_sign_in_button).setOnClickListener { login() }
@@ -41,11 +55,22 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
         }
 
         // try Google Maps
-        findViewById<Button>(R.id.button2).setOnClickListener {
-            startActivity(Intent(this, MapActivity::class.java))
-        }
+//        findViewById<Button>(R.id.button2).setOnClickListener {
+//            startActivity(Intent(this, MapActivity::class.java))
+//        }
         // /try
 
+        // try Server Connect
+//        findViewById<Button>(R.id.button2).setOnClickListener {
+//            startActivity(Intent(this, TEST_ACTIVITY::class.java))
+//        }
+        // /try
+
+        // DialogBox
+        findViewById<Button>(R.id.button2).setOnClickListener {
+            startActivity(Intent(this, TEST_DIALOG_ACTIVITY::class.java))
+        }
+        // /DialogBox
 
         // facebook n' sheet
         val loginButton = findViewById<LoginButton>(R.id.facebook_login_button)

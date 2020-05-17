@@ -1,7 +1,6 @@
 package com.example.universityproject
 
 import android.app.Activity
-import android.app.AlarmManager
 import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.database.Cursor
@@ -12,16 +11,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
-import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.ListAdapter
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.universityproject.data.databases.LocationDatabase
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -31,39 +25,83 @@ import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.OnCompleteListener
-import kotlinx.android.synthetic.main.activity_map.*
 import java.io.IOException
+import kotlin.collections.ArrayList
 
+
+// @todo? : https://www.youtube.com/watch?v=VOl3gkHJf1Q&list=PLgCYzUzKIBE-vInwQhGSdnbyJ62nixHCt&index=9
+// Last video I've seen
+// https://www.youtube.com/watch?v=RQxY7rrZATU&list=PLgCYzUzKIBE-SZUrVOsbYMzH7tPigT3gi
+// and here's another playlist from the same dude
+// https://www.youtube.com/results?search_query=android+studio+google+maps
+// Here you can find other videos about Google Maps API
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
-
     private val LOCATION_PERMISSIONS_REQUEST_CODE = 9002
     private val DEFAULT_ZOOM = 15F
 
-    private final val TAG = "MapActivity"
+    private val TAG = "MapActivity"
     private lateinit var mMap: GoogleMap
     private lateinit var cursor : Cursor
     private var mLocationPermissionsGranted : Boolean = false
     private lateinit var mFusedLocationProviderClient : FusedLocationProviderClient
 
+    private lateinit var mGpsIcon : ImageView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
-        hideKeyboard()
 
         if (!isServiceOk())
             finish()
 
         getLocationPermission()
+        layoutInterfaceInit()
+
+
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        val db = LocationDatabase(this)
-        val COMMAND_SELECT = "SELECT * FROM places WHERE status='OK'";
-        cursor = db.readableDatabase.rawQuery(COMMAND_SELECT, null)
-        cursor.moveToFirst()
+//        val db = LocationDatabase(this)
+//        val COMMAND_SELECT = "SELECT * FROM places WHERE status='OK'";
+//        cursor = db.readableDatabase.rawQuery(COMMAND_SELECT, null)
+//        cursor.moveToFirst()
+    }
+
+    private fun layoutInterfaceInit() {
+        mGpsIcon = findViewById(R.id.ic_gps)
+        mGpsIcon.setOnClickListener {
+            getCurrentDeviceLocation()
+        }
+
+        // Billing required
+        /*
+        if (!Places.isInitialized())
+            Places.initialize(applicationContext, resources.getString(R.string.google_maps_key), Locale.getDefault())
+
+        val autocompleteSupportFragment = supportFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
+        autocompleteSupportFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.LAT_LNG, Place.Field.NAME))
+
+        autocompleteSupportFragment.setOnPlaceSelectedListener(object: PlaceSelectionListener {
+            override fun onPlaceSelected(p0: Place) {
+                Log.d(TAG, "onPlaceSelected: Places was selected: " + p0.address)
+                val location = p0.latLng as LatLng
+                moveCamera(location, DEFAULT_ZOOM)
+
+                try {
+                    moveCamera(location, DEFAULT_ZOOM)
+                } catch (e: Exception) {
+                    Log.d(TAG, "autocompleteSupportFragment: onPlaceSelected: Error: " + e.message)
+                }
+            }
+
+            override fun onError(p0: Status) {
+                Log.d(TAG, "autocompleteSupportFragment: onError: " + p0.statusMessage)
+            }
+        })
+        */
     }
 
     private fun getCurrentDeviceLocation() {
@@ -133,7 +171,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun getLocationPermission(){
-        var permissions = arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION,
+        val permissions = arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.ACCESS_COARSE_LOCATION)
 
         mLocationPermissionsGranted = true
@@ -142,7 +180,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             if (ContextCompat.checkSelfPermission(applicationContext, permission)
             == PackageManager.PERMISSION_DENIED) {
                 mLocationPermissionsGranted = false
-                break;
+                break
             }
         }
 
@@ -176,19 +214,20 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun geoLocate() {
-        Log.d(TAG, "geoLocate: init")
         val searchRequest : String = findViewById<EditText>(R.id.input_search).text.toString()
-        val geocoder : Geocoder = Geocoder(this)
+        val geocoder = Geocoder(this)
         var results : List<Address> = ArrayList()
+
+        Log.d(TAG, "geoLocate: Searching string: " + "\"${searchRequest}\"")
 
         try {
             results = geocoder.getFromLocationName(searchRequest, 1)
         } catch (e: IOException) {
-            Log.d(TAG, "geoLocate: IOException: " + e.message)
+            Log.d(TAG, "geoLocate: IOException: " + e.message + " (${searchRequest})")
         }
 
         if (results.isNotEmpty()) {
-            Log.d(TAG, "geoLocate: Resulting list is not empty: " + results[0].toString())
+            Log.d(TAG, "geoLocate: Resulting list is not empty: " + results.size.toString())
             val address = results[0]
 
             moveCamera(LatLng(address.latitude, address.longitude), DEFAULT_ZOOM, true, address.getAddressLine(0))
@@ -222,32 +261,35 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             mMap.uiSettings.isMyLocationButtonEnabled = false
         }
 
-        findViewById<EditText>(R.id.input_search).setOnEditorActionListener { _, actionId, event ->
+        findViewById<EditText>(R.id.input_search).setOnEditorActionListener { v, actionId, event ->
             Log.d(TAG, "input_search: Edit Action")
 
             if (actionId == EditorInfo.IME_ACTION_SEARCH
                 || actionId == EditorInfo.IME_ACTION_DONE
                 || event.action == KeyEvent.ACTION_DOWN
                 || event.action == KeyEvent.KEYCODE_ENTER) {
+                Log.d(TAG, "input_search: Required action was triggered")
+                // @todo
+                v.text = v.text.toString().replaceFirst("\n", "")
                 geoLocate()
             }
+            Log.d(TAG, "input_search: Required action wasn't triggered")
             false
         }
 
-        this.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
 
 
         // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        val cairo = LatLng(30.0, 31.0)
-        val kazanSobor = LatLng(cursor.getDouble(2), cursor.getDouble(3));
+//        val sydney = LatLng(-34.0, 151.0)
+//        val cairo = LatLng(30.0, 31.0)
+//        val kazanSobor = LatLng(cursor.getDouble(2), cursor.getDouble(3));
 
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney").snippet("Description"))
-        mMap.addMarker(MarkerOptions().position(cairo).title("Marker in Cairo").snippet("Description"))
+//        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney").snippet("Description"))
+//        mMap.addMarker(MarkerOptions().position(cairo).title("Marker in Cairo").snippet("Description"))
 
-        val k = mMap.addMarker(MarkerOptions().position(kazanSobor).title(cursor.getString(1)))
+//        val k = mMap.addMarker(MarkerOptions().position(kazanSobor).title(cursor.getString(1)))
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(kazanSobor))
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(kazanSobor))
 //        getCurrentDeviceLocation()
     }
 }

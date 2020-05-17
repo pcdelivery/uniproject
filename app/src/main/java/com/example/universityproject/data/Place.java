@@ -15,25 +15,16 @@ public class Place {
     private String status;
     private double rating;
 
-    public Place(String title,
-                 double locLat,
-                 double locLong,
-                 double locNE,
-                 double locSW,
-                 int openTime,
-                 int closeTime,
-                 String photosPath,
-                 String types,
-                 String status,
-                 double rating) {
+    // Alt + Insert
+    public Place(String title, double locLat, double locLon, double locNE, double locSW, int openTime, int closeTime, String photos, String types, String status, double rating) {
         this.title = title;
         this.locLat = locLat;
-        this.locLon = locLong;
+        this.locLon = locLon;
         this.locNE = locNE;
         this.locSW = locSW;
         this.openTime = openTime;
         this.closeTime = closeTime;
-        this.photos = photosPath;
+        this.photos = photos;
         this.types = types;
         this.status = status;
         this.rating = rating;
