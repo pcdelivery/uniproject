@@ -5,4 +5,8 @@
     <color name="colorAccent">#D81B60</color>
 
     <color name="black_overlay">#660000</color>
+
+<!--    Registration-->
+    <color name="red_alert">#A81616</color>
+    <color name="green_not_alert">#6ECC4B</color>
 </resources>

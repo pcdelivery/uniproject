@@ -1,7 +1,10 @@
 package com.example.universityproject
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.location.Address
@@ -16,6 +19,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.universityproject.data.JSONUnwrapper
+import com.example.universityproject.data.Models.Place
+import com.example.universityproject.data.databases.ReceiveDataFromMySQLTask
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -23,8 +29,10 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.*
 
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.OnCompleteListener
+import org.json.JSONObject
 import java.io.IOException
 import kotlin.collections.ArrayList
 
@@ -44,6 +52,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var cursor : Cursor
     private var mLocationPermissionsGranted : Boolean = false
     private lateinit var mFusedLocationProviderClient : FusedLocationProviderClient
+    private lateinit var placesInTown: ArrayList<Place>
 
     private lateinit var mGpsIcon : ImageView
 
@@ -54,9 +63,19 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         if (!isServiceOk())
             finish()
 
+        val json = this.intent.getStringExtra("places")
+
+        if (json == null) {
+            Log.d(TAG, "Places unable to unwrap: $json")
+            // TODO offer Telegram
+
+        } else {
+            Log.d(TAG, "Places to unwrap: $json")
+            placesInTown = JSONUnwrapper.getPlaces(JSONObject(json))
+        }
+
         getLocationPermission()
         layoutInterfaceInit()
-
 
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -278,18 +297,37 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
 
+        for (p: Place in placesInTown) {
+            mMap.addMarker(MarkerOptions().position(p.location).title(p.title).snippet(p.description))
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(p.location))
+        }
 
-        // Add a marker in Sydney and move the camera
-//        val sydney = LatLng(-34.0, 151.0)
-//        val cairo = LatLng(30.0, 31.0)
-//        val kazanSobor = LatLng(cursor.getDouble(2), cursor.getDouble(3));
+        mMap.setOnInfoWindowClickListener(object: GoogleMap.OnInfoWindowClickListener {
+            override fun onInfoWindowClick(p0: Marker?) {
+                Log.d(TAG, "Marker info window clock: " + p0?.title)
+                var placeID = 0
 
-//        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney").snippet("Description"))
-//        mMap.addMarker(MarkerOptions().position(cairo).title("Marker in Cairo").snippet("Description"))
+                for (p: Place in placesInTown) {
+                    placeID = p.id
+                    if (p.title.equals(p0?.title))
+                        break
+                }
 
-//        val k = mMap.addMarker(MarkerOptions().position(kazanSobor).title(cursor.getString(1)))
+                GetQuizFromServer(applicationContext, this@MapActivity).execute("quiz&placeid=" + placeID)
+            }
+        })
+    }
 
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(kazanSobor))
-//        getCurrentDeviceLocation()
+    private class GetQuizFromServer(context: Context, activity: Activity): ReceiveDataFromMySQLTask() {
+        private val mContext = context
+        private val mActivity = activity
+
+        override fun onPostExecute(result: String?) {
+            super.onPostExecute(result)
+
+            val intent = Intent(mContext, QuizActivity::class.java)
+            intent.putExtra("quiz", result)
+            mActivity.startActivity(intent)
+        }
     }
 }

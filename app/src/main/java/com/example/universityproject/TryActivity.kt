@@ -19,7 +19,7 @@ class TryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_quiz)
 
-        findViewById<TextView>(R.id.question_text).text = getString(R.string.init_place) + " ${currentQuestion + 1}"
+//        findViewById<TextView>(R.id.question_text).text = getString(R.string.init_place) + " ${currentQuestion + 1}"
 
 
         showQuestion(currentQuestion)
@@ -29,26 +29,26 @@ class TryActivity : AppCompatActivity() {
     private fun showQuestion(index : Int) {
         isClicked = false
 
-        if (index == 0) {
-            findViewById<TextView>(R.id.question_place_text).text = "[" + getString(R.string.init_question_1) + "]"
-            findViewById<Button>(R.id.answer_one).text = getString(R.string.init_answer_1)
-            findViewById<Button>(R.id.answer_two).text = getString(R.string.init_answer_2)
-            findViewById<Button>(R.id.answer_three).text = getString(R.string.init_answer_3)
-            findViewById<Button>(R.id.answer_four).text = getString(R.string.init_answer_4)
-
-            ansID = R.id.answer_two
-        }
-        else if (index == 1) {
-            findViewById<TextView>(R.id.question_place_text).text = "[" + getString(R.string.init_question_2) + "]"
-            findViewById<Button>(R.id.answer_one).text = getString(R.string.init_answer_5)
-            findViewById<Button>(R.id.answer_two).text = getString(R.string.init_answer_6)
-            findViewById<Button>(R.id.answer_three).text = getString(R.string.init_answer_7)
-            findViewById<Button>(R.id.answer_four).text = getString(R.string.init_answer_8)
-
-            ansID = R.id.answer_four
-        }
-        else
-            testIsPassed()
+//        if (index == 0) {
+//            findViewById<TextView>(R.id.question_place_text).text = "[" + getString(R.string.init_question_1) + "]"
+//            findViewById<Button>(R.id.answer_one).text = getString(R.string.init_answer_1)
+//            findViewById<Button>(R.id.answer_two).text = getString(R.string.init_answer_2)
+//            findViewById<Button>(R.id.answer_three).text = getString(R.string.init_answer_3)
+//            findViewById<Button>(R.id.answer_four).text = getString(R.string.init_answer_4)
+//
+//            ansID = R.id.answer_two
+//        }
+//        else if (index == 1) {
+//            findViewById<TextView>(R.id.question_place_text).text = "[" + getString(R.string.init_question_2) + "]"
+//            findViewById<Button>(R.id.answer_one).text = getString(R.string.init_answer_5)
+//            findViewById<Button>(R.id.answer_two).text = getString(R.string.init_answer_6)
+//            findViewById<Button>(R.id.answer_three).text = getString(R.string.init_answer_7)
+//            findViewById<Button>(R.id.answer_four).text = getString(R.string.init_answer_8)
+//
+//            ansID = R.id.answer_four
+//        }
+//        else
+//            testIsPassed()
     }
 
     private fun setButton() {

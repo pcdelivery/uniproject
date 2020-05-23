@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
+import com.example.universityproject.data.DownloadImageTask
 import java.net.URL
 
 class AccountInfoActivity : AppCompatActivity() {
@@ -19,7 +20,9 @@ class AccountInfoActivity : AppCompatActivity() {
             startActivityForResult(galleryIntent, 10)
         }
 
-        val doDownload = DownloadImageTask(findViewById(R.id.avatarView)).execute("https://imgur.com/8ntwC3q.png")
+        val doDownload = DownloadImageTask(
+            findViewById(R.id.avatarView)
+        ).execute("https://imgur.com/8ntwC3q.png")
 
         findViewById<TextView>(R.id.accountInfoText).text = this.intent.getStringExtra(ACCOUNT_DETAILS_KEY)
         findViewById<ImageView>(R.id.avatarView).setOnClickListener {

@@ -1,4 +1,4 @@
-package com.example.universityproject;
+package com.example.universityproject.data;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

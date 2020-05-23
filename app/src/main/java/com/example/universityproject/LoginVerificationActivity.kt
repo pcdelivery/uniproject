@@ -6,20 +6,18 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Handler
 import android.widget.TextView
-import android.database.sqlite.*
 import android.util.Log
-import com.example.universityproject.data.databases.AccountDatabase
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import java.lang.Exception
-import java.sql.*
+import com.example.universityproject.data.Models.ArcantownAccount
+import com.example.universityproject.data.databases.ReceiveDataFromMySQLTask
 
 const val ACCOUNT_DETAILS_KEY = "[ACCOUNT_DETAILS_KEY]"
 
 class LoginVerificationActivity : AppCompatActivity() {
+    val TAG = "LoginVerificationActivity"
 
-    var login : String = "???"
-    var password : String = "???"
-    var database : AccountDatabase? = null
+    lateinit var login : String
+    lateinit var password : String
+//    var database : AccountDatabase? = null
     var verifiedAccount : ArcantownAccount? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,15 +25,10 @@ class LoginVerificationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login_verification)
 
         // @todo to loginActivity
-        database = AccountDatabase(this, 1)
+//        database = AccountDatabase(this, 1)
 
-        try {
-            login = intent.getStringExtra(ACCOUNT_LOGIN_NAME)
-            password = intent.getStringExtra(ACCOUNT_PASSWORD)
-        }
-        catch (x : Exception) {
-            Log.println(Log.ERROR, null, x.message)
-        }
+        login = intent.getStringExtra(ACCOUNT_LOGIN_NAME)
+        password = intent.getStringExtra(ACCOUNT_PASSWORD)
 //        login = "Admin"
 //        password = "qwerty123"
 
@@ -47,35 +40,51 @@ class LoginVerificationActivity : AppCompatActivity() {
 
         val handler = Handler()
         handler.postDelayed(Runnable {
-            if (password == "_google_pass")
-                registerIfNotRegistered(login, password)
+//            if (password == "_google_pass")
+//                registerIfNotRegistered(login, password)
 
-            if (isRegistered(login, password)) {
-                success()
-            }
+//            if (isRegistered(login, password)) {
+//                success()
+//            }
 
 //                val account : ArcantownAccount = ArcantownAccount(cursor.getString(1), cursor.getString(2))
 //                    .Build(cursor.getString(3), cursor.getString(4))
 //                account.id = cursor.getInt(0)
 //                verifiedAccount = account
 
-            else
-                unsuccess()
+//            else
+//                unsuccess()
         }, 1000)
     }
 
     private fun isRegistered (loginToVerify : String, passwordToVerify : String = "_google_pass"): Boolean {
-        val db = database!!.readableDatabase
-        val COMMAND_SELECT = "SELECT * FROM accounts WHERE" +
-                " login='${loginToVerify}' AND" +
-                " password='${passwordToVerify}'"
+//        val db = database!!.readableDatabase
+//        val COMMAND_SELECT = "SELECT * FROM accounts WHERE" +
+//                " login='${loginToVerify}' AND" +
+//                " password='${passwordToVerify}'"
 
-        val cursor = db.rawQuery(COMMAND_SELECT, null)
+        val task = VerifyTask()
+        val res = task.execute("auth&login=" + loginToVerify + "&email=" + loginToVerify + "@mail.ru" + "&password=" + passwordToVerify).get()
+
+        if (res.equals("false")) {
+            Toast.makeText(this, "FALSE", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        else if (res.equals("true")) {
+            Toast.makeText(this, "TRUE", Toast.LENGTH_SHORT).show()
+            return true
+    }
+        else
+            Toast.makeText(this, "ERROR", Toast.LENGTH_SHORT).show()
+
+//        val cursor = db.rawQuery(COMMAND_SELECT, null)
 //        cursor.close()
 
-        return cursor.moveToFirst()
+//        return cursor.moveToFirst()
+        return false
     }
 
+    /*
     private fun registerIfNotRegistered (loginToVerify : String, passwordToVerify : String = "_google_pass") {
         if (isRegistered(loginToVerify, passwordToVerify))
             return
@@ -89,11 +98,13 @@ class LoginVerificationActivity : AppCompatActivity() {
                     loginToVerify,
                     passwordToVerify,
                     ga!!.displayName,
-                    ga!!.familyName))
+                    ga!!.familyName
+                )
+            )
         }
     }
 
-    private fun success() {
+    fun success() {
         val loginIntent = Intent(this, MainPageActivity::class.java)
 
         // ONLY IF VIA GOOGLE!
@@ -113,11 +124,28 @@ class LoginVerificationActivity : AppCompatActivity() {
         Toast.makeText(this, "[SUCCESS] $login : $password ($temp)", Toast.LENGTH_SHORT).show()
         startActivity(loginIntent)
     }
+    */
 
     private fun unsuccess() {
         val loginIntent = Intent(this, LoginActivity::class.java)
         Toast.makeText(this, "[Аккаунта с такими данными не существует] " + login + " : " + password, Toast.LENGTH_SHORT).show()
-        database?.close()
+//        database?.close()
         startActivity(loginIntent)
+    }
+
+
+    private class VerifyTask : ReceiveDataFromMySQLTask() {
+        override fun onPostExecute(result: String?) {
+            super.onPostExecute(result)
+
+            if (result.equals("false"))
+                Log.d("LoginVerification", "FALSE")
+            else if (result.equals("true")) {
+                Log.d("LoginVerification", "TRUE")
+                //
+            }
+            else
+                Log.d("LoginVerification", "ERROR")
+        }
     }
 }

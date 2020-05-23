@@ -1,12 +1,8 @@
 package com.example.universityproject.data.databases;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
-import com.example.universityproject.ArcantownAccount;
-import com.example.universityproject.data.Place;
 
 public class LocationDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "Locations.db";
@@ -22,7 +18,7 @@ public class LocationDatabase extends SQLiteOpenHelper {
         database.execSQL(CLEAR_COMMAND);
 
         // Fill table
-        putInitialRows(database);
+//        putInitialRows(database);
 
         database.close();
     }
@@ -62,7 +58,7 @@ public class LocationDatabase extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public static void putNewRow(SQLiteDatabase db, Place place) {
+    /*public static void putNewRow(SQLiteDatabase db, Place place) {
         ContentValues cv = place.generateDatabaseRow();
 
         db.insert(TABLE_NAME, null, cv);
@@ -85,5 +81,5 @@ public class LocationDatabase extends SQLiteOpenHelper {
                         4.54
                 )
         );
-    }
+    }*/
 }

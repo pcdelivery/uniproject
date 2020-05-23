@@ -6,22 +6,40 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import android.content.Intent
+import android.util.Log
+import com.example.universityproject.data.JSONUnwrapper
+import com.example.universityproject.data.Models.Place
+import com.example.universityproject.data.Models.QuizData
 
 const val POINTS_RECIEVED_KEY = "[POINTS-RECIEVED]"
 
+
+// @TODO: rebuild this at all
 class QuizActivity : AppCompatActivity() {
+    private final val TAG = "QuizActivity"
 
     var currentQuestion : Int = 0
     var points : Int = 0
     var isClicked : Boolean = false
-    var ql : QuizList = QuizList(getString(R.string.init_place))
+    private lateinit var quiz: QuizData
+//    var ql : QuizList = QuizList(getString(R.string.init_place))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_quiz)
 
+        val json = this.intent.getStringExtra("quiz")
+
+        if (json == null)
+            // TODO
+            Log.d(TAG, "Error: JSON is null")
+        else {
+            quiz = QuizData(json)
+            Log.d(TAG, "QuizData success: " + quiz.present())
+        }
+
         findViewById<TextView>(R.id.question_text).text = "${currentQuestion + 1}" + ". " + "Answer about"
-        findViewById<TextView>(R.id.question_place_text).text = getString(R.string.init_place)
+//        findViewById<TextView>(R.id.question_place_text).text = getString(R.string.init_place)
 
         showQuestion(currentQuestion)
         setButton()
@@ -30,10 +48,10 @@ class QuizActivity : AppCompatActivity() {
     private fun showQuestion(index : Int) {
         isClicked = false
 
-        findViewById<Button>(R.id.answer_one).text = getString(ql.list[index].indexes[0])
-        findViewById<Button>(R.id.answer_two).text = getString(ql.list[index].indexes[1])
-        findViewById<Button>(R.id.answer_three).text = getString(ql.list[index].indexes[2])
-        findViewById<Button>(R.id.answer_four).text = getString(ql.list[index].indexes[3])
+//        findViewById<Button>(R.id.answer_one).text = getString(ql.list[index].indexes[0])
+//        findViewById<Button>(R.id.answer_two).text = getString(ql.list[index].indexes[1])
+//        findViewById<Button>(R.id.answer_three).text = getString(ql.list[index].indexes[2])
+//        findViewById<Button>(R.id.answer_four).text = getString(ql.list[index].indexes[3])
     }
 
 //    private fun updateQuestion() {
@@ -54,23 +72,23 @@ class QuizActivity : AppCompatActivity() {
         findViewById<Button>(R.id.next_button).setOnClickListener {
             currentQuestion += 1
 
-            if (currentQuestion == ql.list.size)
-                testIsPassed()
-
-            if (!isClicked)
-                Toast.makeText(applicationContext, "Click on something!", Toast.LENGTH_SHORT).show()
-            else {
-                showQuestion(currentQuestion)
-            }
+//            if (currentQuestion == ql.list.size)
+//                testIsPassed()
+//
+//            if (!isClicked)
+//                Toast.makeText(applicationContext, "Click on something!", Toast.LENGTH_SHORT).show()
+//            else {
+//                showQuestion(currentQuestion)
+//            }
         }
 
         findViewById<Button>(R.id.answer_one).setOnClickListener {
             findViewById<Button>(R.id.answer_one).setTextColor(4)
 
-            if (ql.list.get(currentQuestion)._rightAnswer == R.id.answer_one) {
-                points += 1
-                isClicked = true
-            }
+//            if (ql.list.get(currentQuestion)._rightAnswer == R.id.answer_one) {
+//                points += 1
+//                isClicked = true
+//            }
 
 //            if (resources.getString(mCountryList.mQuestions[mCurrentIndex].capital) == resources.getString(mCountryList.mQuestions[mAnswer.get(0)].capital)) {
 //                Toast.makeText(applicationContext, R.string.answer_true, Toast.LENGTH_SHORT).show()
@@ -82,28 +100,28 @@ class QuizActivity : AppCompatActivity() {
         findViewById<Button>(R.id.answer_two).setOnClickListener {
             findViewById<Button>(R.id.answer_two).setTextColor(4)
 
-            if (ql.list.get(currentQuestion)._rightAnswer == R.id.answer_two) {
-                points += 1
-                isClicked = true
-            }
+//            if (ql.list.get(currentQuestion)._rightAnswer == R.id.answer_two) {
+//                points += 1
+//                isClicked = true
+//            }
         }
 
         findViewById<Button>(R.id.answer_three).setOnClickListener {
             findViewById<Button>(R.id.answer_three).setTextColor(4)
 
-            if (ql.list.get(currentQuestion)._rightAnswer == R.id.answer_three) {
-                points += 1
-                isClicked = true
-            }
+//            if (ql.list.get(currentQuestion)._rightAnswer == R.id.answer_three) {
+//                points += 1
+//                isClicked = true
+//            }
         }
 
         findViewById<Button>(R.id.answer_four).setOnClickListener {
             findViewById<Button>(R.id.answer_four).setTextColor(4)
 
-            if (ql.list.get(currentQuestion)._rightAnswer == R.id.answer_four) {
-                points += 1
-                isClicked = true
-            }
+//            if (ql.list.get(currentQuestion)._rightAnswer == R.id.answer_four) {
+//                points += 1
+//                isClicked = true
+//            }
         }
     }
 

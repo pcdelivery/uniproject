@@ -3,7 +3,6 @@
     style="?attr/spinnerDropDownItemStyle"
     android:textColor="@color/quantum_bluegrey500"
     android:textSize="12pt"
-    android:textScaleX="2"
     android:singleLine="true"
     android:layout_width="match_parent"
     android:layout_height="?attr/dropdownListPreferredItemHeight"

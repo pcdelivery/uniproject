@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Аркантаун</string>
     <string name="login_req">Логин:</string>
+    <string name="email_req">Эл. почта:</string>
     <string name="pass_req">Пароль:</string>
     <string name="title_activity_login">Sign in</string>
     <string name="prompt_email">Email</string>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PreferencesActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="1dp"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:scrollbarSize="5dp"
+        android:overScrollMode="always">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:id="@+id/preferences_email_string"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Электронная почта: "
+                    android:textSize="@dimen/references"/>
+
+                <TextView
+                    android:id="@+id/preferences_email"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="MAIL-NULL"
+                    android:textSize="@dimen/references"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp"
+                android:gravity="center_horizontal">
+
+                <Button
+                    android:id="@+id/preferences_confirm_email_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Confirm E-mail"/>
+
+                <Button
+                    android:id="@+id/preferences_change_email_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Change E-mail" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:id="@+id/preferences_login_string"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Логин: "
+                    android:textSize="@dimen/references"/>
+
+                <TextView
+                    android:id="@+id/preferences_login"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="LOGIN-NULL"
+                    android:textSize="@dimen/references"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/preferences_change_login_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Change Login"
+                android:layout_gravity="center_horizontal"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:id="@+id/preferences_name_string"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Имя: "
+                    android:textSize="@dimen/references"/>
+
+                <TextView
+                    android:id="@+id/preferences_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="NAME-NULL"
+                    android:textSize="@dimen/references"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/preferences_change_name_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Change Name"
+                android:layout_gravity="center_horizontal"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:id="@+id/preferences_country_string"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Страна: "
+                    android:textSize="@dimen/references"/>
+
+                <TextView
+                    android:id="@+id/preferences_country"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="COUNTRY-NULL"
+                    android:textSize="@dimen/references"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/preferences_change_country_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Change Current Country"
+                android:layout_gravity="center_horizontal"/>
+
+            <TextView
+                android:id="@+id/preferences_password_string"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Настройки пароля"
+                android:textSize="@dimen/references"
+                android:layout_marginTop="30dp"
+                android:layout_gravity="center_horizontal"/>
+
+            <Button
+                android:id="@+id/preferences_change_password_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Change Password"
+                android:layout_gravity="center_horizontal"/>
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

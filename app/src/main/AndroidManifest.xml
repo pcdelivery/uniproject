@@ -21,7 +21,11 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-        <activity android:name=".TEST_DIALOG_ACTIVITY"></activity>
+        <activity android:name=".PreferenceChangeActivity"/>
+        <activity android:name=".PreferencesActivity" />
+        <activity android:name=".TEST_SEND_PICS_ACTIVITY" />
+        <activity android:name=".TEST_JSON_ACTIVITY" />
+        <activity android:name=".TEST_DIALOG_ACTIVITY" />
         <activity android:name=".TEST_ACTIVITY" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -68,7 +72,11 @@
         <!-- android:label="@string/title_activity_main_page" -->
         <!-- android:theme="@style/AppTheme.NoActionBar" /> -->
         <activity android:name=".LoginVerificationActivity" />
-        <activity android:name=".LoginActivity">
+        <activity
+            android:name=".LoginActivity"
+            android:theme="@style/AppTheme">
+
+            <!-- android:theme="@style/AppTheme.AppBarOverlay"> -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

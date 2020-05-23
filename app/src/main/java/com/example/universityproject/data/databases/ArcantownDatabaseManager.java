@@ -1,101 +1,60 @@
 package com.example.universityproject.data.databases;
 
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteStatement;
+import com.example.universityproject.data.Models.QuizData;
 
-import java.sql.Statement;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 
 
-// @TODO: ne dodelal eshe
-public class ArcantownDatabaseManager extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "data.db";
+public class ArcantownDatabaseManager {
 
-    private static final String[] mTables =
-            {"accounts",
-            "gallery",
-            "local_places",
-            "questions"};
+    public ArcantownDatabaseManager() {
 
-    public ArcantownDatabaseManager(Context cnt) {
-        super(cnt, DATABASE_NAME, null, 1);
     }
 
-    // Frees table from any data (table still exists within database though)
-    public void clearDatabase(SQLiteDatabase database) {
-        for (String tableName : mTables)
-            database.execSQL("DELETE FROM " + tableName);
-    }
+    // @TODO
+    // placeId from places list in current town
+    public QuizData getQuiz(int placeId, ArrayList<String> types) {
+        String requestURL = "http://192.168.1.33:8090/DJWA_war/MyServlet?want=quiz&placeid=" +
+                String.valueOf(placeId) + "&types=";
 
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-            String create =
-                    "CREATE TABLE IF NOT EXISTS " + "accounts" + "(" +
-                            "ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                            // @todo: social media id to connect with friends
-                            "LOGIN TEXT," +
-                            "PASSWORD TEXT," +
-                            "NAME TEXT," +
-                            "FAMILY_NAME TEXT" + ")";
+        for (String t : types)
+            requestURL = requestURL.concat(t).concat("*");
 
-            db.execSQL(create);
+        StringBuilder jsonResponse = new StringBuilder();
 
-        create =
-                "CREATE TABLE IF NOT EXISTS " + "gallery" + "(" +
-                        "ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "DATETIME TEXT," +
-                        "LOCATION TEXT," +
-                        "IMAGE_PATH TEXT" + ")";
+        HttpURLConnection connection;
+        BufferedReader reader;
 
-        db.execSQL(create);
+        try {
+            URL link = new URL(requestURL);
+            connection = (HttpURLConnection) link.openConnection();
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+            connection.connect();
 
-        create =
-                "CREATE TABLE IF NOT EXISTS " + "local_places" + "(" +
-                        "ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "NAME TEXT," +
-                        "LOCATION_LAT REAL," +
-                        "LOCATION_LONG REAL," +
-//                        "LOCATION_NE REAL," +
-//                        "LOCATION_SW REAL," +
-                        "LOCATION_OPEN_TIME TEXT," +
-                        "LOCATION_CLOSE_TIME TEXT," +
-                        "PHOTOS TEXT," +
-                        "TYPES TEXT," +
-                        "STATUS TEXT," +
-                        "RATING REAL" + ")";
+            InputStream stream = connection.getInputStream();
+            reader = new BufferedReader(new InputStreamReader(stream));
 
-        db.execSQL(create);
+            String line = "";
 
-        create =
-                "CREATE TABLE IF NOT EXISTS " + "questions" + "(" +
-                        "ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "QUESTION TEXT," +
-                        "QUESTION_PIC_URI TEXT," +
-                        "ANSWER1 TEXT," +
-                        "ANSWER2 TEXT," +
-                        "ANSWER3 TEXT," +
-                        "ANSWER4 TEXT," +
-                        "CORRECT_ANSWER INTEGER" + ")";
+            while ((line = reader.readLine()) != null)
+                jsonResponse.append(line);
 
-        db.execSQL(create);
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        for (String tableName: mTables) {
-            db.execSQL("DROP TABLE IF EXISTS " + tableName);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
 
-        onCreate(db);
-    }
-
-    @Override
-    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        for (String tableName: mTables) {
-            db.execSQL("DROP TABLE IF EXISTS " + tableName);
-        }
-
-        onCreate(db);
+        return new QuizData(jsonResponse.toString());
     }
 }
