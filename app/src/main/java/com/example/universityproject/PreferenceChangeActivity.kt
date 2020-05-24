@@ -30,6 +30,12 @@ class PreferenceChangeActivity : AppCompatActivity() {
         clientID = getSharedPreferences("account", Context.MODE_PRIVATE).getString("id", "-1")
 
         findViewById<Button>(R.id.preferences_change_button).setOnClickListener {
+            if (fieldName.equals("password")) {
+                FirebaseAuth.getInstance().currentUser?.updatePassword(fieldContent.text.toString())
+                Toast.makeText(this, "Password changed successfully", Toast.LENGTH_LONG).show()
+                finish()
+            }
+
             Log.d(TAG, "Activity init change: [Message] " + message + " [Field name] " +
                     fieldName + " [New Value] " + fieldContent.text + " [ID] " + clientID)
 

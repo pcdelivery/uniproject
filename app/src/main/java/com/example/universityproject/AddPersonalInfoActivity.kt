@@ -60,7 +60,7 @@ class AddPersonalInfoActivity : AppCompatActivity() {
 
         intent.putExtra(OVERALL_SPECIALITY, speciality)
         intent.putExtra(SUB_SPECIALITY, subSpeciality)
-        setResult(REQUEST_RESULT_OK, intent)
+//        setResult(REQUEST_RESULT_OK, intent)
 
         finish()
     }

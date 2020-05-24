@@ -87,8 +87,8 @@ class TryActivity : AppCompatActivity() {
 
     private fun testIsPassed() {
         val intent = Intent()
-        intent.putExtra(POINTS_RECIEVED_KEY, points)
-        setResult(REQUEST_RESULT_OK, intent)
+//        intent.putExtra(POINTS_RECIEVED_KEY, points)
+//        setResult(REQUEST_RESULT_OK, intent)
         finish()
     }
 }

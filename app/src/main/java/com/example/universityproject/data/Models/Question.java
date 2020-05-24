@@ -24,12 +24,18 @@ public class Question {
     private static final String TAG = "Question";
     //@todo: private QuestionTypes questionType;
     public int id;
+    public int placeID;
     public String questionType;
     public String questionImageURI;
     public String question;
     public String questionThemes;
     public ArrayList<Answer> answers;
-//    public int correctAnswerIndex;
+
+    public int correctAnswerIndex;
+
+    public int getCorrectAnswerIndex() {
+        return correctAnswerIndex;
+    }
 
     /**
      *
@@ -37,6 +43,7 @@ public class Question {
      */
     public Question(JSONObject json) {
         answers = new ArrayList<Answer>();
+        int correctAnswerID = 0;
 
         try {
             id = json.getInt("id");
@@ -47,6 +54,7 @@ public class Question {
                 questionImageURI = json.getString("question_unique_image");
             }
 
+            placeID = json.getInt("place_id");
             question = json.getString("question");
             questionThemes = json.getString("question_themes");
 
@@ -54,15 +62,18 @@ public class Question {
             for (int i = 0; i < arr.length(); i++) {
                 Log.d(TAG, "Adding answer string: " + arr.getString(i));
                 arr.getJSONObject(i);
-                answers.add(
-                        new Answer(arr.getJSONObject(i))
-                );
+
+                Answer newAnswer = new Answer(arr.getJSONObject(i));
+                correctAnswerID = newAnswer.isTrue() ? i : correctAnswerID;
+                answers.add(newAnswer);
             }
 
 //            correctAnswerIndex = json.getInt("correct_answer_index");
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        correctAnswerIndex = correctAnswerID;
     }
 
 //    public int id;
@@ -76,6 +87,7 @@ public class Question {
         StringBuilder resLog = new StringBuilder();
 
         resLog.append("\t[Question ID: " + id + "]").append("\n");
+        resLog.append("\t[Question Place ID: " + placeID + "]").append("\n");
         resLog.append("\t[Question Type: " + questionType + "]").append("\n");
         resLog.append("\t[Question Image URI: " + questionImageURI + "]").append("\n");
         resLog.append("\t[Question Text: " + question + "]").append("\n");

@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.OnCompleteListener
+import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import kotlin.collections.ArrayList
@@ -45,6 +46,7 @@ import kotlin.collections.ArrayList
 // Here you can find other videos about Google Maps API
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private val LOCATION_PERMISSIONS_REQUEST_CODE = 9002
+    private val QUIZ_REQUEST_CODE = 9003
     private val DEFAULT_ZOOM = 15F
 
     private val TAG = "MapActivity"
@@ -71,7 +73,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         } else {
             Log.d(TAG, "Places to unwrap: $json")
-            placesInTown = JSONUnwrapper.getPlaces(JSONObject(json))
+            try {
+                placesInTown = JSONUnwrapper.getPlaces(JSONObject(json))
+            } catch (x: JSONException) {
+                Toast.makeText(this, "Connection error: " + x.toString(), Toast.LENGTH_LONG).show()
+                setResult(Activity.RESULT_CANCELED)
+                finish()
+            }
         }
 
         getLocationPermission()
@@ -232,6 +240,20 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        when(requestCode) {
+            QUIZ_REQUEST_CODE -> when(resultCode) {
+                Activity.RESULT_OK -> {
+                    // Just pass data to main menu
+                    this.setResult(Activity.RESULT_OK, data)
+                    finish()
+                }
+            }
+        }
+    }
+
     private fun geoLocate() {
         val searchRequest : String = findViewById<EditText>(R.id.input_search).text.toString()
         val geocoder = Geocoder(this)
@@ -313,21 +335,22 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                         break
                 }
 
-                GetQuizFromServer(applicationContext, this@MapActivity).execute("quiz&placeid=" + placeID)
+                GetQuizFromServer(applicationContext, this@MapActivity, QUIZ_REQUEST_CODE).execute("quiz&placeid=" + placeID)
             }
         })
     }
 
-    private class GetQuizFromServer(context: Context, activity: Activity): ReceiveDataFromMySQLTask() {
+    private class GetQuizFromServer(context: Context, activity: Activity, requestCode: Int): ReceiveDataFromMySQLTask() {
         private val mContext = context
         private val mActivity = activity
+        private val mRequestCode = requestCode
 
         override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
 
             val intent = Intent(mContext, QuizActivity::class.java)
             intent.putExtra("quiz", result)
-            mActivity.startActivity(intent)
+            mActivity.startActivityForResult(intent, mRequestCode)
         }
     }
 }

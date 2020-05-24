@@ -19,7 +19,7 @@
     <string name="welcome_password_default">[PASSWORD]</string>
     <string name="you_have_x_points">У тебя %1$d баллов</string>
     <string name="add_data_about_yourself">Добавить данные о себе</string>
-    <string name="add_data_about_yourself_hint">+5 баллов</string>
+    <string name="add_data_about_yourself_hint">+3 бонусных балла</string>
     <string name="do_test_button">Пройти тест</string>
     <string name="button_next">Далее ></string>
 

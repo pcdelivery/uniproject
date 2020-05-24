@@ -48,7 +48,7 @@
         android:gravity="center_horizontal" />
 
     <Button
-        android:id="@+id/addDataAboutUrself"
+        android:id="@+id/add_your_data_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
@@ -60,17 +60,17 @@
         app:layout_constraintTop_toBottomOf="@+id/points" />
 
     <TextView
-        android:id="@+id/addDataAboutUrself_hint"
+        android:id="@+id/add_your_data_hint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
         android:text="@string/add_data_about_yourself_hint"
         android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="@+id/addDataAboutUrself"
-        app:layout_constraintTop_toBottomOf="@+id/addDataAboutUrself" />
+        app:layout_constraintEnd_toEndOf="@+id/add_your_data_button"
+        app:layout_constraintTop_toBottomOf="@+id/add_your_data_button" />
 
     <Button
-        android:id="@+id/doTest"
+        android:id="@+id/go_test_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
@@ -79,10 +79,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addDataAboutUrself" />
+        app:layout_constraintTop_toBottomOf="@+id/add_your_data_button" />
 
     <Button
-        android:id="@+id/doMap"
+        android:id="@+id/go_map_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
@@ -91,10 +91,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/doTest" />
+        app:layout_constraintTop_toBottomOf="@+id/go_test_button" />
 
     <Button
-        android:id="@+id/accountInfoButton"
+        android:id="@+id/account_info_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
@@ -103,5 +103,13 @@
         android:text="Мой аккаунт"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <Spinner
+        android:id="@+id/town_select_spinner"
+        android:layout_width="15dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/go_map_button"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteX="1dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

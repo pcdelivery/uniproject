@@ -10,6 +10,10 @@ public class Answer {
     private boolean isTrue;
     private String imageUri;
 
+    public String getAnswer() {
+        return answer;
+    }
+
     public Answer(JSONObject json) throws JSONException {
         id = json.getInt("id");
         question_id = json.getInt("question_id");

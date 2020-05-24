@@ -13,6 +13,8 @@ import java.util.ArrayList;
 public class QuizData {
     private final static String TAG = "QuizData";
 
+    private int _id;
+
     private Place place;
     private ArrayList<Question> questions;
 
@@ -29,6 +31,7 @@ public class QuizData {
      * @param jsonObject: String like "{"place": {}, "questions": []}"
      */
     public QuizData(String jsonObject) {
+        _id = 0;
         questions = new ArrayList<>();
 
         try {
@@ -57,5 +60,16 @@ public class QuizData {
             resLog.append(q.present()).append("\n");
 
         return resLog.toString();
+    }
+
+    /**
+     *
+     * @return: next Question or null
+     */
+    public Question getNext() {
+        if (_id >= questions.size())
+            return null;
+
+        return this.questions.get(_id++);
     }
 }
