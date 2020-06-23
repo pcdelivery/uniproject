@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.location.Address
 import android.location.Geocoder
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -101,6 +102,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         mGpsIcon = findViewById(R.id.ic_gps)
         mGpsIcon.setOnClickListener {
             getCurrentDeviceLocation()
+        }
+
+        val mTelegramBot = findViewById<ImageView>(R.id.ic_telegram)
+        mTelegramBot.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://telegram.me/local_places_bot"))
+            startActivity(intent)
         }
 
         // Billing required
@@ -317,7 +324,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             Log.d(TAG, "input_search: Required action wasn't triggered")
             false
         }
-
 
         for (p: Place in placesInTown) {
             mMap.addMarker(MarkerOptions().position(p.location).title(p.title).snippet(p.description))

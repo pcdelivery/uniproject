@@ -21,7 +21,8 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-        <activity android:name=".PreferenceChangeActivity"/>
+        <activity android:name=".TRY_MYSQL_ACTIVITY"></activity>
+        <activity android:name=".PreferenceChangeActivity" />
         <activity android:name=".PreferencesActivity" />
         <activity android:name=".TEST_SEND_PICS_ACTIVITY" />
         <activity android:name=".TEST_JSON_ACTIVITY" />
@@ -64,14 +65,12 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".FullImageActivity" />
         <activity android:name=".UserAlbumActivity" />
-        <activity android:name=".AccountInfoActivity" />
         <activity android:name=".TryActivity" />
         <activity android:name=".QuizActivity" />
         <activity android:name=".AddPersonalInfoActivity" />
         <activity android:name=".MainPageActivity" /> <!-- android:configChanges="orientation|keyboardHidden|screenSize" -->
         <!-- android:label="@string/title_activity_main_page" -->
         <!-- android:theme="@style/AppTheme.NoActionBar" /> -->
-        <activity android:name=".LoginVerificationActivity" />
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme">

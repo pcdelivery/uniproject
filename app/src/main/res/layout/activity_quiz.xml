@@ -12,18 +12,47 @@
     android:orientation="vertical"
     tools:context=".QuizActivity">
 
-    <ImageView
-        android:id="@+id/quiz_image"
-        android:layout_width="match_parent"
-        android:layout_height="234dp"
-        android:contentDescription="saf"
-        app:srcCompat="@drawable/lva_tolstogo_square_spb_02" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/prev_button"
+            android:layout_width="45dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:text="@string/arrow_left"
+            android:textSize="20sp"
+            tools:ignore="RtlHardcoded" />
+
+        <ImageView
+            android:id="@+id/quiz_image"
+            android:layout_width="280dp"
+            android:layout_height="170dp"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/lva_tolstogo_square_spb_02" />
+
+        <Button
+            android:id="@+id/next_button"
+            android:layout_width="45dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:text="@string/arrow_right"
+            android:textSize="20sp"
+            tools:ignore="RtlHardcoded" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/quiz_question"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
         android:text="Question"
         android:textSize="24sp"/>
 
@@ -38,22 +67,9 @@
         android:orientation="horizontal"
         android:paddingTop="20dp">
 
-        <Button
-            android:id="@+id/prev_button"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_gravity="left"
-            android:layout_marginRight="30dp"
-            android:text="PREV"
-            android:textSize="20dp"/>
 
-        <Button
-            android:id="@+id/next_button"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_gravity="right"
-            android:text="NEXT"
-            android:textSize="20dp"/>
+
+
     </LinearLayout>
 </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

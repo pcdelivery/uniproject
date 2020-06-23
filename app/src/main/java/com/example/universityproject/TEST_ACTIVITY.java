@@ -16,6 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+// TODO: remove testing activities
 public class TEST_ACTIVITY extends AppCompatActivity {
 
     private String SERVLET_URL = "http://192.168.1.33:8088/DJWA_war/MyServlet";

@@ -18,9 +18,10 @@
     <string name="welcome_login_default">[LOGIN]</string>
     <string name="welcome_password_default">[PASSWORD]</string>
     <string name="you_have_x_points">У тебя %1$d баллов</string>
-    <string name="add_data_about_yourself">Добавить данные о себе</string>
+    <string name="add_data_about_yourself">Расскажи о себе</string>
     <string name="add_data_about_yourself_hint">+3 бонусных балла</string>
     <string name="do_test_button">Пройти тест</string>
+    <string name="album_button">Альбом</string>
     <string name="button_next">Далее ></string>
 
     <string name="title_activity_user_album">UserAlbumActivity</string>
@@ -30,5 +31,7 @@
     <string name="facebook_app_id">712210002852464</string>
     <string name="fb_login_protocol_scheme">fb712210002852464</string>
     <string name="title_activity_map">Map</string>
+    <string name="arrow_left"><![CDATA[<-]]></string>
+    <string name="arrow_right"><![CDATA[->]]></string>
 
 </resources>

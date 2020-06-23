@@ -12,12 +12,13 @@ import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
+import com.example.universityproject.data.JSONUnwrapper
+import com.example.universityproject.data.databases.DatabaseManager
+import com.example.universityproject.data.databases.ReceiveDataFromMySQLTask
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import org.json.JSONObject
 import org.w3c.dom.Text
 
 class PreferencesActivity : AppCompatActivity() {
@@ -35,16 +36,42 @@ class PreferencesActivity : AppCompatActivity() {
     private lateinit var countryButton: Button
     private lateinit var passwordButton: Button
 
+    private lateinit var countries: ArrayList<String>
+    private lateinit var countriesAdapter: ArrayAdapter<String>
+
+    private lateinit var manager: DatabaseManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_preferences)
 
+        manager = DatabaseManager(this)
 
         emailButton = findViewById<Button>(R.id.preferences_change_email_button)
         loginButton = findViewById<Button>(R.id.preferences_change_login_button)
         nameButton = findViewById<Button>(R.id.preferences_change_name_button)
         countryButton = findViewById<Button>(R.id.preferences_change_country_button)
         passwordButton = findViewById<Button>(R.id.preferences_change_password_button)
+
+        // Spinner
+        var country = manager.countryFromShared
+        countries = arrayListOf(country)
+
+        val countriesSpinner = findViewById<Spinner>(R.id.country_select_spinner)
+        countriesAdapter = ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, countries)
+        countriesSpinner.adapter = countriesAdapter
+        countriesSpinner.setSelection(0)
+
+        countriesSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                manager.updateAccount("cur_country", parent?.selectedItem.toString())
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) { }
+        }
+
+        GetCountriesJSON(countriesSpinner, this).execute("countries")
+        // /Spinner
 
         val accountInfo = getSharedPreferences("account", Context.MODE_PRIVATE)
 
@@ -135,6 +162,21 @@ class PreferencesActivity : AppCompatActivity() {
             Activity.RESULT_CANCELED -> {
                 viewToHighlight.setTextColor(resources.getColor(R.color.red_alert))
                 viewToHighlight.startAnimation(animationShake)
+            }
+        }
+    }
+
+    private class GetCountriesJSON(spinner: Spinner, context: Context) : ReceiveDataFromMySQLTask() {
+        private val mSpinner = spinner
+        private val mContext = context
+
+        override fun onPostExecute(result: String?) {
+            Log.d("GetTownsJSON", "JustGetOneJSON: $result")
+
+            if (result != null) {
+                val countries = JSONUnwrapper.getCountries(JSONObject(result))
+                val newAdapter = ArrayAdapter<String>(mContext, R.layout._adapter_item_test, countries)
+                mSpinner.adapter = newAdapter
             }
         }
     }

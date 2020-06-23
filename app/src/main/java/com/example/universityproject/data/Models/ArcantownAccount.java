@@ -1,5 +1,6 @@
 package com.example.universityproject.data.Models;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,6 +45,10 @@ public class ArcantownAccount {
         return completedPlaces;
     }
 
+    public int getBonus() {
+        return bonus;
+    }
+
     private int id;
     private String authType;
     private String email;
@@ -56,6 +61,7 @@ public class ArcantownAccount {
 //    private ArrayList<Integer> completedPlaces;
 //    private ArrayList<Place> completedPlaces;
     private String completedPlaces;
+    private int bonus;
 
 //    public ArcantownAccount(int id, String authType, String email, int points) {
 //        this.id = id;
@@ -69,30 +75,39 @@ public class ArcantownAccount {
 
 
         this.id = obj.getInt("id");
-        Log.d("Account", "Progress_1");
         this.authType = obj.getString("auth_type");
-        Log.d("Account", "Progress_2");
         this.email = obj.getString("email");
-        Log.d("Account", "Progress_3");
         this.login = obj.getString("login");
-        Log.d("Account", "Progress_4");
         this.personalName = obj.getString("name");
-        Log.d("Account", "Progress_5");
         this.points = obj.getInt("points");
-        Log.d("Account", "Progress_6");
         this.currentCountry = obj.getString("country");
-        Log.d("Account", "Progress_7");
         this.currentTown = obj.getString("town");
-        Log.d("Account", "Progress_8");
         this.completedPlaces = obj.getString("completed");
-        Log.d("Account", "Progress_9");
+        this.bonus = obj.getInt("bonus");
 
-//            completedPlaces = new ArrayList<Integer>();
-//            JSONArray arr = obj.getJSONArray("completed");
-//            for (int i = 0; i < arr.length(); i++)
-//                completedPlaces.add(arr.getInt(i));
+        Log.d("Account", "Completely formed from JSON: " + this.generateJSONObject());
+    }
 
-        Log.d("Account", "Completely formed from JSON");
+
+//    <string name="bonus">0</string>
+//    <string name="completed">0</string>
+
+
+    public ArcantownAccount(SharedPreferences sp) throws JSONException {
+
+        // todo delete -1
+        this.id = Integer.decode(sp.getString("id", "-1"));
+        this.authType = sp.getString("auth_type", "-1");
+        this.email = sp.getString("email", "-1");
+        this.login = sp.getString("login", "-1");
+        this.personalName = sp.getString("name", "-1");
+        this.points = Integer.decode(sp.getString("points", "-1"));
+        this.currentCountry = sp.getString("cur_country", "-1");
+        this.currentTown = sp.getString("cur_town", "-1");
+        this.completedPlaces = sp.getString("completed", "-1");
+        this.bonus = Integer.decode(sp.getString("bonus", "-1"));
+
+        Log.d("Account", "Completely formed from JSON: " + this.generateJSONObject());
     }
 
     public String generateJSONObject() {
@@ -115,9 +130,10 @@ public class ArcantownAccount {
                                 "\"points\": %d," +
                                 "\"country\": \"%s\"," +
                                 "\"town\": \"%s\"," +
-                                "\"completed\": %s" +
+                                "\"completed\": \"%s\"," +
+                                "\"bonus\": %d" +
                         "}",
-                id, authType, email, login, personalName, points, currentCountry, currentTown, completedPlaces
+                id, authType, email, login, personalName, points, currentCountry, currentTown, completedPlaces, bonus
         );
     }
 }

@@ -2,9 +2,6 @@ package com.example.universityproject.data.Models;
 
 import android.util.Log;
 
-import com.example.universityproject.data.Models.Place;
-import com.example.universityproject.data.Models.Question;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +28,7 @@ public class QuizData {
      * @param jsonObject: String like "{"place": {}, "questions": []}"
      */
     public QuizData(String jsonObject) {
-        _id = 0;
+        _id = -1;
         questions = new ArrayList<>();
 
         try {
@@ -67,9 +64,32 @@ public class QuizData {
      * @return: next Question or null
      */
     public Question getNext() {
-        if (_id >= questions.size())
+        if (questions.size() <= 0)
             return null;
+        else if (_id + 1 >= questions.size())
+            return null;
+        else if (_id == -1)
+            _id = 0;
+        else
+            _id++;
 
-        return this.questions.get(_id++);
+        return this.questions.get(_id);
+    }
+
+    public Question getPrevious() {
+        if (questions.size() <= 0)
+            return null;
+        else if (_id == -1)
+            _id = 0;
+        else if (_id - 1 < 0)
+            return null;
+        else
+            _id--;
+
+        return this.questions.get(_id);
+    }
+
+    public int getCurrent() {
+        return _id;
     }
 }

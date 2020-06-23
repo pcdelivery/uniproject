@@ -32,10 +32,10 @@ class QuizActivity : AppCompatActivity() {
     var points : Int = 0
     var correctAnswer = 0
     private lateinit var quiz: QuizData
+    private lateinit var results: IntArray
 
-    private lateinit var buttonList: ArrayList<Button>
-    private lateinit var listAdapter: ArrayAdapter<Button>
-    private lateinit var listAdapter2: ButtonAdapter
+    private lateinit var buttonList: ArrayList<String>
+    private lateinit var listAdapter: ButtonAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,11 +44,9 @@ class QuizActivity : AppCompatActivity() {
         questionImage = findViewById(R.id.quiz_image)
         questionText = findViewById(R.id.quiz_question)
         questionButtonsList = findViewById(R.id.quiz_button_list)
-        buttonList = ArrayList<Button>()
-        listAdapter = ArrayAdapter<Button>(this, R.layout.quiz_answer_button, buttonList)
+        buttonList = ArrayList<String>()
+        listAdapter = ButtonAdapter(this, R.layout.quiz_answer_button, buttonList)
         questionButtonsList.adapter = listAdapter
-
-        DownloadImageTask(questionImage).execute("https://imgur.com/8ntwC3q.png")
 
         val json = this.intent.getStringExtra("quiz")
 
@@ -58,23 +56,44 @@ class QuizActivity : AppCompatActivity() {
         else {
             quiz = QuizData(json)
             Log.d(TAG, "QuizData success: " + quiz.present())
+
+            DownloadImageTask(questionImage).execute(quiz.place.image)
+            Log.d(TAG, "Image to download: " + quiz.place.image)
         }
 
-        questionButtonsList.onItemClickListener = object: AdapterView.OnItemClickListener {
-            override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long
-            ) {
-                if (correctAnswer.toLong() == id)
-                    points += POINTS_FOR_ANSWER
+        findViewById<Button>(R.id.prev_button).setOnClickListener(object: View.OnClickListener {
+            override fun onClick(v: View?) {
+                Log.d(TAG, "Clicked: current=" + quiz.current + "correct="+correctAnswer)
 
-                Toast.makeText(applicationContext, "click: " + id.toInt(), Toast.LENGTH_SHORT).show()
+                if (listAdapter.popLastClickedPosition() == correctAnswer)
+                    results[quiz.current] = POINTS_FOR_ANSWER
+                else
+                    results[quiz.current] = 0
+
+                updateQuestion(quiz.previous)
+                Toast.makeText(applicationContext, "Prev", Toast.LENGTH_SHORT).show()
+            }
+
+        })
+
+        findViewById<Button>(R.id.next_button).setOnClickListener(object: View.OnClickListener {
+            override fun onClick(v: View?) {
+                Log.d(TAG, "Clicked: current=" + quiz.current + "correct="+correctAnswer)
+
+                if (listAdapter.popLastClickedPosition() == correctAnswer)
+                    results[quiz.current] = POINTS_FOR_ANSWER
+                else
+                    results[quiz.current] = 0
+
                 updateQuestion(quiz.next)
             }
 
-        }
+        })
 
         // todo set place image and name in the tab
         Log.d(TAG, "HERE: 1")
 
+        results = IntArray(quiz.questions.size) {0}
         updateQuestion(quiz.next)
     }
 
@@ -89,24 +108,25 @@ class QuizActivity : AppCompatActivity() {
             buttonList.clear()
 
             for (answer: Answer in question.answers) {
-                val b = Button(this)
-                b.text = answer.answer
-                buttonList.add(b)
+                buttonList.add(answer.answer)
             }
 
-            Log.d(TAG, "Button list to adapter: ${buttonList.get(0).text.toString()}")
+//            Log.d(TAG, "Button list to adapter: ${buttonList.get(0).text.toString()}")
             Log.d(TAG, "NOB: ${buttonList.size}")
 
             listAdapter.notifyDataSetChanged()
-//            listAdapter = ArrayAdapter<Button>(this, R.layout.quiz_answer_button, buttonList)
-//            questionButtonsList.adapter = listAdapter
         }
     }
 
     private fun quizIsDone() {
+        for (i: Int in results)
+            points += i
+
         intent = Intent()
             .putExtra("points", points)
+            .putExtra("placeid", quiz.place.id)
 
+        Log.d(TAG, "Quiz is done: $points : " + results.toString())
         Toast.makeText(this, "Done! [$points]", Toast.LENGTH_SHORT).show()
 
         setResult(Activity.RESULT_OK, intent)

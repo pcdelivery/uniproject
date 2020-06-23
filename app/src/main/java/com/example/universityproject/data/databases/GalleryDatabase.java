@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 
+// TODO: delete it later
 public class GalleryDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "Images.db";
     private static final String TABLE_NAME = "user_album";

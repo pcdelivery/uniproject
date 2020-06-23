@@ -16,53 +16,49 @@ import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.core.view.get
 import com.example.universityproject.data.JSONUnwrapper
+import com.example.universityproject.data.databases.DatabaseManager
 import com.example.universityproject.data.databases.ReceiveDataFromMySQLTask
 import kotlinx.android.synthetic.main.activity_main_page.*
 import kotlinx.android.synthetic.main.add_personal_info.*
 import org.json.JSONObject
 import kotlin.math.log
 
-private const val SPECIALITY_REQUEST = 2101
-private const val REQUEST_RESULT_OK = 1020
-private const val MAP_AND_QUIZ_REQUEST = 8000
-private const val TAG = "MainPageActivity"
-
 class MainPageActivity : AppCompatActivity() {
+    private val SPECIALITY_REQUEST = 2101
+    private val MAP_AND_QUIZ_REQUEST = 8000
+    private val TAG = "MainPageActivity"
+
     private lateinit var loginTextView: TextView
     private lateinit var interestsHint: TextView
     private lateinit var textPoints: TextView
     private lateinit var interestsButton: Button
-    private lateinit var sharedPreferences: SharedPreferences
 
     private lateinit var townListAdapter: ArrayAdapter<String>
     private lateinit var townList: ArrayList<String>
 
-    private var userPoints : Int = 0
-    private var userID : Int = 0
+    private lateinit var manager: DatabaseManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_page)
 //        setSupportActionBar(toolbar)
 
-        interestsButton = findViewById<Button>(R.id.add_your_data_button)
-        interestsHint = findViewById<TextView>(R.id.add_your_data_hint)
-        loginTextView = findViewById<TextView>(R.id.textViewLogin)
-        textPoints = findViewById<TextView>(R.id.points)
-        sharedPreferences = getSharedPreferences("account", Context.MODE_PRIVATE)
-        loginTextView.text = sharedPreferences.getString("login", "Пользователь")
-        userPoints = sharedPreferences.getString("points", "0").toString().toInt()
-        userPoints = sharedPreferences.getString("id", "0").toString().toInt()
+        manager = DatabaseManager(this)
 
-        // Spinners
-        // TODO: add country select on registration and setting change
-        val town = sharedPreferences.getString("cur_town", "Moscow").toString()
-        var country = sharedPreferences.getString("cur_country", "Russia").toString()
+        interestsButton = findViewById(R.id.add_your_data_button)
+        interestsHint = findViewById(R.id.add_your_data_hint)
+        loginTextView = findViewById(R.id.textViewLogin)
+        textPoints = findViewById(R.id.points)
 
-        // TODO delete later
-        // TODO country = nonull in mysql
-        if (country == "null")
-            country = "Russia"
+        loginTextView.text = manager.loginFromShared
+        textPoints.text = manager.pointsFromShared
+
+        // Spinner handle
+        var town = manager.townFromShared
+        val country = manager.countryFromShared
+
+        if (town == null)
+            town = "Moscow"
 
         townList = arrayListOf(town)
 
@@ -73,7 +69,7 @@ class MainPageActivity : AppCompatActivity() {
 
         townSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                sharedPreferences.edit().putString("town", parent?.selectedItem.toString()).apply()
+                manager.updateAccount("cur_town", parent?.selectedItem.toString())
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) { }
@@ -81,13 +77,7 @@ class MainPageActivity : AppCompatActivity() {
 
         Log.d(TAG, "Country to towns get: " + country)
         GetTownsJSON(townSpinner, this).execute("towns&country=" + country)
-        // /Spinners
-
-
-        //        listElements = new ArrayAdapter<String>(this, R.layout._adapter_item_test, new String[] {"Loading..."});
-//        listElements.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-//        mSpinner.setAdapter(listElements);
-        //
+        // /Spinner
 
         // check if user got bonus before, hide button and textview
         checkBonus()
@@ -98,32 +88,31 @@ class MainPageActivity : AppCompatActivity() {
             startActivityForResult(intent, SPECIALITY_REQUEST)
         }
         findViewById<Button>(R.id.go_test_button).setOnClickListener {
-            // TODO
-            val currentCountry = sharedPreferences.getString("country", "Russia")
-            val currentTown = sharedPreferences.getString("town", "null")
+            val currentCountry = manager.countryFromShared
+            val currentTown = manager.townFromShared
 
             GetPlacesAndGoToMap(this, this, MAP_AND_QUIZ_REQUEST)
                 .execute("places&country=$currentCountry&town=$currentTown")
         }
-        findViewById<Button>(R.id.account_info_button).setOnClickListener {
-            val intent = Intent(this, AccountInfoActivity::class.java)
-            intent.putExtra(ACCOUNT_DETAILS_KEY, this.intent.getStringExtra(ACCOUNT_DETAILS_KEY))
 
+        findViewById<Button>(R.id.user_album_button).setOnClickListener {
+            val intent = Intent(this, UserAlbumActivity::class.java)
             startActivity(intent)
-        }
-        findViewById<Button>(R.id.go_map_button).setOnClickListener {
-            startActivity(Intent(this, MapActivity::class.java))
         }
     }
 
     private fun checkBonus() {
-        val userGotBonusBefore = sharedPreferences.getString("bonus", "false")
+        val userGotBonusBefore = manager.bonusFromShared
 
-        if (userGotBonusBefore.equals("true")) {
-            interestsButton.visibility = View.GONE
-            interestsHint.visibility = View.GONE
-        }
+        if (userGotBonusBefore == "1")
+            hideInterest()
     }
+
+    private fun hideInterest() {
+        interestsButton.visibility = View.GONE
+        interestsHint.visibility = View.GONE
+    }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.action_bar, menu)
@@ -140,22 +129,33 @@ class MainPageActivity : AppCompatActivity() {
 
         when (requestCode) {
             SPECIALITY_REQUEST -> {
-                val newUserPoints = userPoints + 3
+                if (resultCode == Activity.RESULT_OK) {
+                    val newUserPoints = manager.pointsFromShared.toInt() + 3
 
-                UpdatePoints(sharedPreferences, interestsButton, interestsHint, textPoints, newUserPoints)
-                    .execute("change&id=" + userID + "&field=points" + "&value=" + newUserPoints)
+                    manager.updateAccount("points", newUserPoints.toString());
+                    manager.updateAccount("bonus", "1");
+
+                    textPoints.text = newUserPoints.toString()
+                    hideInterest()
+                }
+                else if (resultCode == Activity.RESULT_CANCELED) {
+                    Log.d(TAG, "SPECIALITY_REQUEST: Fail")
+                    Toast.makeText(this, "Well...", Toast.LENGTH_LONG).show()
+                }
             }
             MAP_AND_QUIZ_REQUEST -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    var newPoints = userPoints
+                    if (data != null) {
+                        val addPoints = data.getIntExtra("points", 0)
+                        val placeID = data.getIntExtra("placeid", 0)
 
-                    if (data != null)
-                        newPoints += data.getIntExtra("points", 0)
+                        textPoints.text = (manager.pointsFromShared.toInt() + addPoints).toString()
 
-                    UpdatePoints(sharedPreferences, null, null, textPoints, newPoints)
-                        .execute("change&id=" + userID + "&field=points" + "&value=" + newPoints)
+                        // update only after setting because of Async
+                        manager.updateQuizInAccount(placeID.toString(), addPoints.toString());
+                    }
                 } else
-                    Toast.makeText(this, "Error while passing test", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Error while passing and synchronising test", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -174,30 +174,6 @@ class MainPageActivity : AppCompatActivity() {
         }
     }
 
-    private class UpdatePoints(shared: SharedPreferences, buttonToHide: Button?, textToHide: TextView?, textPoints: TextView, newPoints: Int)
-        : ReceiveDataFromMySQLTask() {
-        val mSharedPreferences = shared
-        val mButton = buttonToHide
-        val mText = textToHide
-        val mPoints = textPoints
-        val mNewPoints = newPoints
-
-        override fun onPostExecute(result: String?) {
-
-            if (result.equals("true")) {
-                Log.d("UpdatePoints", "Points updated: $result")
-                mSharedPreferences.edit().putString("bonus", "true").apply()
-                mSharedPreferences.edit().putInt("points", mNewPoints).apply()
-
-                if (mButton != null)
-                    mButton.visibility = View.GONE
-                if (mText != null)
-                    mText.visibility = View.GONE
-
-                mPoints.text = mNewPoints.toString()
-            }
-        }
-    }
 
     private class GetTownsJSON(spinner: Spinner, context: Context) : ReceiveDataFromMySQLTask() {
         private val mSpinner = spinner
@@ -205,7 +181,7 @@ class MainPageActivity : AppCompatActivity() {
 
 
         override fun onPostExecute(result: String?) {
-            Log.d(TAG, "JustGetOneJSON: $result")
+            Log.d("GetTownsJSON", "JustGetOneJSON: $result")
 
             if (result != null) {
                 val towns = JSONUnwrapper.getTowns(JSONObject(result))

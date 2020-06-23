@@ -45,6 +45,22 @@ public class JSONUnwrapper {
 
     /**
      *
+     * @param jsonContent: {"specs": [...]}
+     * @return
+     * @throws JSONException
+     */
+    public static ArrayList<String> getSpecs(JSONObject jsonContent) throws JSONException {
+        ArrayList<String> result = new ArrayList<>();
+        JSONArray arr = jsonContent.getJSONArray("specs");
+
+        for (int i = 0; i < arr.length(); i++)
+            result.add(arr.getString(i));
+
+        return result;
+    }
+
+    /**
+     *
      * @param jsonContent: {"countries": [...]}
      * @return
      * @throws JSONException
@@ -66,6 +82,7 @@ public class JSONUnwrapper {
      * @throws JSONException
      */
     public static ArrayList<String> getTowns(JSONObject jsonContent) throws JSONException {
+        Log.d("GetTowns", jsonContent.toString());
         ArrayList<String> result = new ArrayList<>();
         JSONArray arr = jsonContent.getJSONArray("towns");
 

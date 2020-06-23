@@ -1,67 +1,87 @@
 package com.example.universityproject
 
+import android.app.Activity
+import android.app.ProgressDialog
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Intent
+import android.database.DataSetObserver
+import android.util.Log
 import android.widget.*
 import android.widget.Toast
-
-const val OVERALL_SPECIALITY = "[SPECIALITY]"
-const val SUB_SPECIALITY = "[SUB_SPECIALITY]"
+import com.example.universityproject.data.CheckBoxAdapter
+import com.example.universityproject.data.JSONUnwrapper
+import com.example.universityproject.data.databases.ReceiveDataFromMySQLTask
+import org.json.JSONObject
 
 class AddPersonalInfoActivity : AppCompatActivity() {
-    private var isSecond : Boolean = false
-    private var speciality : String? = "NONE"
-    private var subSpeciality : String? = "NONE"
+    private val TAG = "AddPersonalInfoActivity"
+    private lateinit var checkBoxesList : ListView
+    private var checkBoxesListAdapter : CheckBoxAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.add_personal_info)
 
+        checkBoxesList = findViewById(R.id.checkboxes_list)
 
         findViewById<Button>(R.id.buttonNext).setOnClickListener {
-            val group = findViewById<RadioGroup>(R.id.radioGroup)
-            val checkedID = group.checkedRadioButtonId
-            val checkedString = group.findViewById<RadioButton>(checkedID).text.toString()
+            val checkedBoxesAdapter = checkBoxesList.adapter as CheckBoxAdapter
+            val checked = checkedBoxesAdapter.checked
 
-//            Toast.makeText(this, "Check: " + checkedButton, Toast.LENGTH_SHORT).show()
+            Log.d(TAG, "Finish button clicked: Specs: $checked")
 
-            if (checkedID == -1)
-                Toast.makeText(this, "Check something!", Toast.LENGTH_LONG).show()
-            else {
-                when (isSecond) {
-                    false -> {speciality = checkedString; update(); }
-                    true -> {subSpeciality = checkedString; endExecuting(); }
-                }
-            }
+            val intent = Intent()
+            intent.putExtra("specs", checked)
+
+            if (checked == null || checked.size == 0)
+                this.setResult(Activity.RESULT_CANCELED)
+            else
+                this.setResult(Activity.RESULT_OK)
+
+            finish()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        GetSpecsJSON(checkBoxesList, checkBoxesListAdapter, this).execute("specs")
+    }
+
+
+    private class GetSpecsJSON(checkBoxes: ListView, adapter: CheckBoxAdapter?, context: Context) : ReceiveDataFromMySQLTask() {
+        private val mCheckBoxes = checkBoxes
+        private var mAdapter = adapter
+        private val mContext = context
+        private var pd = ProgressDialog(context)
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+
+            pd.setMessage("Loading...")
+            pd.setCancelable(false)
+            pd.show()
         }
 
-        findViewById<TextView>(R.id.answerText).text = "Укажите вид своей профессиональной деятельности:"
-        findViewById<RadioButton>(R.id.radioButton).text = "Гуманитарные науки"
-        findViewById<RadioButton>(R.id.radioButton2).text = "Технические науки"
-        findViewById<RadioButton>(R.id.radioButton3).text = "Экономика"
-        findViewById<RadioButton>(R.id.radioButton4).text = "Лингвистика"
-        findViewById<RadioButton>(R.id.radioButton5).text = "Другое"
-    }
+        override fun onPostExecute(result: String?) {
+            Log.d("GetSpecsJSON", "Result: $result")
 
-    private fun update() {
-        isSecond = true
+            pd.dismiss()
 
-        findViewById<TextView>(R.id.answerText).text = "Техническая специальность:"
-        findViewById<RadioButton>(R.id.radioButton).text = "Архитектура"
-        findViewById<RadioButton>(R.id.radioButton2).text = "Электротехника"
-        findViewById<RadioButton>(R.id.radioButton3).text = "Ядерная энергетика"
-        findViewById<RadioButton>(R.id.radioButton4).text = "Машиностроение"
-        findViewById<RadioButton>(R.id.radioButton5).text = "Информатика"
-    }
+            if (result == null || result == "false") {
+                Toast.makeText(mContext, "Unable to fetch speciality list", Toast.LENGTH_LONG).show()
+                Log.d("GetSpecsJSON", "Unable to fetch speciality list")
 
-    private fun endExecuting() {
-        val intent = Intent()
-
-        intent.putExtra(OVERALL_SPECIALITY, speciality)
-        intent.putExtra(SUB_SPECIALITY, subSpeciality)
-//        setResult(REQUEST_RESULT_OK, intent)
-
-        finish()
+                Activity().setResult(Activity.RESULT_CANCELED)
+                Activity().finish()
+            }
+            else {
+                Log.d("GetSpecsJSON", "Successful fetching speciality list")
+                mAdapter = CheckBoxAdapter(mContext, result)
+                mCheckBoxes.adapter = mAdapter
+            }
+        }
     }
 }

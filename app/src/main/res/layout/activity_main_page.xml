@@ -14,7 +14,7 @@
         android:layout_marginTop="12dp"
         android:text="@string/welcome"
         android:textAlignment="center"
-        android:textSize="45sp"
+        android:textSize="40sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -33,6 +33,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewWelcome" />
 
+    <Spinner
+        android:id="@+id/town_select_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewLogin" />
+
 
     <TextView
         android:id="@+id/points"
@@ -40,22 +49,22 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         android:text="@string/you_have_x_points"
-        android:textSize="40sp"
+        android:textSize="30sp"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewLogin"
+        app:layout_constraintTop_toBottomOf="@+id/town_select_spinner"
         android:gravity="center_horizontal" />
 
     <Button
         android:id="@+id/add_your_data_button"
-        android:layout_width="wrap_content"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="60dp"
         android:text="@string/add_data_about_yourself"
         android:textSize="25sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.509"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/points" />
 
@@ -71,7 +80,7 @@
 
     <Button
         android:id="@+id/go_test_button"
-        android:layout_width="wrap_content"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
         android:text="@string/do_test_button"
@@ -82,34 +91,14 @@
         app:layout_constraintTop_toBottomOf="@+id/add_your_data_button" />
 
     <Button
-        android:id="@+id/go_map_button"
-        android:layout_width="wrap_content"
+        android:id="@+id/user_album_button"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
-        android:text="На карту"
+        android:text="@string/album_button"
         android:textSize="25sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/go_test_button" />
-
-    <Button
-        android:id="@+id/account_info_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginBottom="4dp"
-        android:text="Мой аккаунт"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Spinner
-        android:id="@+id/town_select_spinner"
-        android:layout_width="15dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/go_map_button"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteX="1dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

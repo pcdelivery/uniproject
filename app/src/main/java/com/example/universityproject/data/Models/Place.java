@@ -30,6 +30,10 @@ public class Place {
         return location;
     }
 
+    public String getImage() {
+        return pictureURI;
+    }
+
     public String getDescription() {
         return "Position: " + country + ", " + town +
                 "\nOpens: " + openTime + "\nCloses: " + closeTime +
